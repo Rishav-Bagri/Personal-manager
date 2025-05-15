@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  userName  String   @unique
+  email     String   @unique
+  password  String
+  updatedAt DateTime @updatedAt
+
+  passwordManager PasswordManager[]
+  bucketList      BucketList[]
+  budgetTracker   BudgetTracker[]
+  reminders       Reminder[]
+  tasks           Task[]
+}
+
+model PasswordManager {
+  id       String  @id @default(uuid())
+  userName String
+  user     User    @relation(fields: [userName], references: [userName])
+  domain   String
+  password String
+  notes    String?
+}
+
+model BucketList {
+  id        String    @id @default(uuid())
+  userName  String
+  user      User      @relation(fields: [userName], references: [userName])
+  title     String
+  plan      String
+  createdAt DateTime  @default(now())
+  doneBy    DateTime?
+  isDone    Boolean   @default(false)
+}
+
+model BudgetTracker {
+  id            String   @id @default(uuid())
+  userName      String
+  user          User     @relation(fields: [userName], references: [userName])
+  thingsToSpend String
+  money         String
+  category      String?
+  paidBy        DateTime
+  paid          Boolean
+}
+
+model Reminder {
+  id       String   @id @default(uuid())
+  userName String
+  user     User     @relation(fields: [userName], references: [userName])
+  title    String
+  time     DateTime
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  userName    String
+  user        User      @relation(fields: [userName], references: [userName])
+  title       String
+  description String
+  done        Boolean   @default(false)
+  dueDate     DateTime?
+  priority    Priority?
+}
