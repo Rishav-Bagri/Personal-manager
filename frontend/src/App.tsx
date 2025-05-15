@@ -3,8 +3,8 @@ import { Home } from "./pages/Home"
 import { Navbar } from "./components/Navbar"
 import {Features} from "./pages/Features"
 import { BucketList } from "./features/bucket-list/BucketList"
-import { BudgetTracker } from "./features/budget-tracker/BudgetTracker"
-import { ExpenseTracker } from "./features/expense-tracker/ExpenseTracker"
+import { BudgetTracker } from "./features/budget-tracker/Notepad"
+import { ExpenseTracker } from "./features/notepad/ExpenseTracker"
 import { PasswordManager } from "./features/password-manager/PasswordManager"
 import { Tasks } from "./features/tasks/Tasks"
 import { Reminders } from "./features/reminders/Reminders"
@@ -19,7 +19,7 @@ function App() {
                 <Route path="/features" element={<Features />} />
                 <Route path="/bucket-list" element={<BucketList />} />
                 <Route path="/budget-tracker" element={<BudgetTracker />} />
-                <Route path="/expense-tracker" element={<ExpenseTracker />} />
+                <Route path="/notepad" element={<ExpenseTracker />} />
                 <Route path="/password-manager" element={<PasswordManager />} />
                 <Route path="/reminders" element={<Reminders />} />
                 <Route path="/tasks" element={<Tasks />} />
