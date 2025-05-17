@@ -9,6 +9,9 @@ passwordManagerRouter.get("/get-password",(c)=>{
 passwordManagerRouter.post("/domains",(c)=>{
     return c.text("post  domain")
 })
+passwordManagerRouter.delete("/delete-password",(c)=>{
+    return c.text("password deleted")
+})
 passwordManagerRouter.get("/domains",(c)=>{
     return c.text("domains get")
 })
