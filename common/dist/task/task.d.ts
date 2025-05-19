@@ -1,18 +1,15 @@
 import { z } from "zod";
 export declare const TaskCreateSchema: z.ZodObject<{
-    userName: z.ZodString;
     title: z.ZodString;
     description: z.ZodString;
     dueDate: z.ZodOptional<z.ZodDate>;
     priority: z.ZodOptional<z.ZodEnum<["HIGH", "MEDIUM", "LOW"]>>;
 }, "strip", z.ZodTypeAny, {
-    userName: string;
     title: string;
     description: string;
     dueDate?: Date | undefined;
     priority?: "HIGH" | "MEDIUM" | "LOW" | undefined;
 }, {
-    userName: string;
     title: string;
     description: string;
     dueDate?: Date | undefined;
@@ -47,14 +44,6 @@ export declare const TaskDeleteSchema: z.ZodObject<{
 }, {
     id: string;
 }>;
-export declare const TaskListSchema: z.ZodObject<{
-    userName: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    userName: string;
-}, {
-    userName: string;
-}>;
 export type TaskCreateType = z.infer<typeof TaskCreateSchema>;
 export type TaskUpdateType = z.infer<typeof TaskUpdateSchema>;
 export type TaskDeleteType = z.infer<typeof TaskDeleteSchema>;
-export type TaskListType = z.infer<typeof TaskListSchema>;

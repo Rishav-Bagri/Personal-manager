@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TaskListSchema = exports.TaskDeleteSchema = exports.TaskUpdateSchema = exports.TaskCreateSchema = void 0;
+exports.TaskDeleteSchema = exports.TaskUpdateSchema = exports.TaskCreateSchema = void 0;
 const zod_1 = require("zod");
 exports.TaskCreateSchema = zod_1.z.object({
-    userName: zod_1.z.string().min(1),
     title: zod_1.z.string().min(1),
     description: zod_1.z.string().min(1),
     dueDate: zod_1.z.coerce.date().optional(),
@@ -19,7 +18,4 @@ exports.TaskUpdateSchema = zod_1.z.object({
 });
 exports.TaskDeleteSchema = zod_1.z.object({
     id: zod_1.z.string().uuid()
-});
-exports.TaskListSchema = zod_1.z.object({
-    userName: zod_1.z.string().min(1)
 });

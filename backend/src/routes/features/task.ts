@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { date } from 'zod'
-import { TaskCreateSchema, TaskDeleteSchema, TaskListSchema, TaskUpdateSchema } from 'daddys-personal-manager'
+import { TaskCreateSchema, TaskDeleteSchema, TaskUpdateSchema } from 'daddys-personal-manager'
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { ENV } from './envtype'
@@ -16,17 +16,8 @@ taskRouter.get("/bulk",async(c)=>{
             datasourceUrl: c.env.DATABASE_URL,
         }).$extends(withAccelerate())
         
-        const rawData = await c.req.json()
         const data = {
-            ...rawData,
             userName: c.get("userName"),
-        }
-
-        const {success}=TaskListSchema.safeParse(data)
-        if(!success){
-            return c.json({
-                message:"validation failed"
-            })
         }
         console.log("hi");
         const tasks=await prisma.task.findMany({
@@ -47,11 +38,11 @@ taskRouter.post("/create",async(c)=>{
         console.log(c.env.DATABASE_URL);
 
         const rawData = await c.req.json()
+        const {success}=TaskCreateSchema.safeParse(rawData)
         const data = {
             ...rawData,
             userName: c.get("userName"),
         }
-        const {success}=TaskCreateSchema.safeParse(data)
         if(!success){
             return c.json({
                 message:"validation failed"
@@ -73,11 +64,11 @@ taskRouter.put("/update",async(c)=>{
         }).$extends(withAccelerate())
 
         const rawData = await c.req.json()
+        const {success}=TaskUpdateSchema.safeParse(rawData)
         const data = {
             ...rawData,
             userName: c.get("userName"),
         }
-        const {success}=TaskUpdateSchema.safeParse(data)
         if(!success){
             return c.json({
                 message:"validation failed"
@@ -101,11 +92,11 @@ taskRouter.delete("/delete",async(c)=>{
         }).$extends(withAccelerate())
 
         const rawData = await c.req.json()
+        const {success}=TaskDeleteSchema.safeParse(rawData)
             const data = {
             ...rawData,
             userName: c.get("userName"),
         }
-        const {success}=TaskDeleteSchema.safeParse(data)
         if(!success){
             return c.json({
                 message:"validation failed"

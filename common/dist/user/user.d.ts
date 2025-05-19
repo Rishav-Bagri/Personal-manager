@@ -5,14 +5,14 @@ export declare const UserCreateSchema: z.ZodObject<{
     email: z.ZodString;
     password: z.ZodString;
 }, "strip", z.ZodTypeAny, {
-    userName: string;
     password: string;
     name: string;
+    userName: string;
     email: string;
 }, {
-    userName: string;
     password: string;
     name: string;
+    userName: string;
     email: string;
 }>;
 export declare const UserLoginSchema: z.ZodObject<{
@@ -33,15 +33,15 @@ export declare const UserUpdateSchema: z.ZodObject<{
     password: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     id: string;
-    userName?: string | undefined;
     password?: string | undefined;
     name?: string | undefined;
+    userName?: string | undefined;
     email?: string | undefined;
 }, {
     id: string;
-    userName?: string | undefined;
     password?: string | undefined;
     name?: string | undefined;
+    userName?: string | undefined;
     email?: string | undefined;
 }>;
 export type UserCreateType = z.infer<typeof UserCreateSchema>;

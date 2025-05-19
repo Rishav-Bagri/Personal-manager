@@ -1,6 +1,6 @@
 {
   "name": "daddys-personal-manager",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Zod validation schemas for Daddy's Personal Manager app",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

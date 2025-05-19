@@ -1,4 +1,4 @@
-export function Notepad(){
+export function BudgetTracker(){
     return <div>
         
     </div>

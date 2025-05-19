@@ -1,28 +1,18 @@
 import { z } from "zod";
-export declare const BKT_CreateSchema: z.ZodObject<{
-    userName: z.ZodString;
+export declare const bucketListCreateSchema: z.ZodObject<{
     title: z.ZodString;
     plan: z.ZodString;
     doneBy: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
-    userName: string;
     title: string;
     plan: string;
     doneBy?: string | undefined;
 }, {
-    userName: string;
     title: string;
     plan: string;
     doneBy?: string | undefined;
 }>;
-export declare const BKT_GetSchema: z.ZodObject<{
-    userName: z.ZodString;
-}, "strip", z.ZodTypeAny, {
-    userName: string;
-}, {
-    userName: string;
-}>;
-export declare const BKT_UpdateSchema: z.ZodObject<{
+export declare const bucketListUpdateSchema: z.ZodObject<{
     id: z.ZodString;
     title: z.ZodOptional<z.ZodString>;
     plan: z.ZodOptional<z.ZodString>;
@@ -41,6 +31,5 @@ export declare const BKT_UpdateSchema: z.ZodObject<{
     doneBy?: string | undefined;
     isDone?: boolean | undefined;
 }>;
-export type BKT_CreateType = z.infer<typeof BKT_CreateSchema>;
-export type BKT_GetType = z.infer<typeof BKT_GetSchema>;
-export type BKT_UpdateType = z.infer<typeof BKT_UpdateSchema>;
+export type BucketListCreateType = z.infer<typeof bucketListCreateSchema>;
+export type BucketListUpdateType = z.infer<typeof bucketListUpdateSchema>;
