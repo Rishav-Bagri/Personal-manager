@@ -7,7 +7,7 @@ reminderRouter.get("/reminder",(c)=>{
     return c.text("get reminder")
 })
 reminderRouter.post("/reminder",(c)=>{
-    return c.text("post  reminder")
+    return c.text("post reminder")
 })
 
 reminderRouter.delete("/reminder",(c)=>{
