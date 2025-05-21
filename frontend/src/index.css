@@ -1,1 +1,95 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap');
+
+/* Tailwind import */
 @import "tailwindcss";
+
+/* Apply Quicksand to everything */
+body {
+  font-family: 'Quicksand', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom right, #ffe4ec, #ffe6f0);
+  overflow-x: hidden;
+}
+
+/* Smooth UI transitions */
+* {
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(255, 192, 203, 0.15);
+}
+
+/* Particle Background Container */
+.particle-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Particle Styles */
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #f472b6;
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: float 10s linear infinite;
+}
+
+.particle:nth-child(2) {
+  left: 20%;
+  animation-duration: 12s;
+  background: #f9a8d4;
+  width: 6px;
+  height: 6px;
+}
+
+.particle:nth-child(3) {
+  left: 40%;
+  animation-duration: 8s;
+  background: #fbcfe8;
+  width: 10px;
+  height: 10px;
+}
+
+.particle:nth-child(4) {
+  left: 60%;
+  animation-duration: 14s;
+  background: #fda4af;
+  width: 7px;
+  height: 7px;
+}
+
+.particle:nth-child(5) {
+  left: 80%;
+  animation-duration: 9s;
+  background: #f472b6;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0% {
+    top: 100%;
+    transform: translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.8;
+  }
+  100% {
+    top: -10%;
+    transform: translateX(50px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Optional: heading glow */
+h1, h2, h3 {
+  text-shadow: 0 0 5px rgba(255, 182, 193, 0.4);
+}

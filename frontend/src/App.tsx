@@ -11,7 +11,12 @@ import { BudgetTracker } from "./features/budget-tracker/budgetTracker"
 import { Notepad } from "./features/notepad/notepad"
 function App() {
 
-    return <div className="">
+    return <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-100"
+  style={{
+    backgroundImage: "url('https://www.transparenttextures.com/patterns/white-wall-3.png')",
+    backgroundRepeat: "repeat",
+    backgroundSize: "auto",
+  }}>
         <BrowserRouter>
             <Navbar />
             <Routes>

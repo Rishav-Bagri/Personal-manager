@@ -1,5 +1,5 @@
 export function Tasks(){
     return <div>
-        hi aryan loves BBC
+        hi aryan loves 
     </div>
 }

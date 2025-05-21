@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.passwordManagerDeleteSchema = exports.passwordManagerUpdateSchema = exports.passwordManagerGetPasswordByIdSchema = exports.passwordManagerCreateSchema = void 0;
+exports.passwordManagerBulkSchema = exports.passwordManagerDeleteSchema = exports.passwordManagerUpdateSchema = exports.passwordManagerGetPasswordByIdSchema = exports.passwordManagerCreateSchema = void 0;
 const zod_1 = require("zod");
 // Schemas
 exports.passwordManagerCreateSchema = zod_1.z.object({
@@ -18,4 +18,10 @@ exports.passwordManagerUpdateSchema = zod_1.z.object({
 });
 exports.passwordManagerDeleteSchema = zod_1.z.object({
     id: zod_1.z.string().uuid(),
+});
+exports.passwordManagerBulkSchema = zod_1.z.object({
+    id: zod_1.z.string().uuid(),
+    userName: zod_1.z.string(),
+    domain: zod_1.z.string(),
+    notes: zod_1.z.string().optional(),
 });

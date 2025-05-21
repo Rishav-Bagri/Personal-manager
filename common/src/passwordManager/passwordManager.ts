@@ -21,7 +21,16 @@ export const passwordManagerDeleteSchema = z.object({
   id: z.string().uuid(),
 })
 
+export const passwordManagerBulkSchema = z.object({
+  id: z.string().uuid(),
+  userName: z.string(),
+  domain: z.string(),
+  notes: z.string().optional(),
+})
+
 // Types
+
+export type PasswordManagerType = z.infer<typeof passwordManagerBulkSchema>
 export type PasswordManagerCreateInput = z.infer<typeof passwordManagerCreateSchema>
 export type PasswordManagerGetPasswordByIdInput = z.infer<typeof passwordManagerGetPasswordByIdSchema>
 export type PasswordManagerUpdateInput = z.infer<typeof passwordManagerUpdateSchema>
