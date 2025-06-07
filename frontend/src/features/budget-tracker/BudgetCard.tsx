@@ -1,66 +1,30 @@
-import { useState } from "react"
-import { BudgetTrackerType, BudgetTrackerUpdateType } from "daddys-personal-manager"
+import { BudgetTrackerType } from "daddys-personal-manager"
+import { CheckCircle, Circle } from "lucide-react"
 
 interface Props {
   entry: BudgetTrackerType
-  onUpdate: (id: string, update: BudgetTrackerUpdateType) => void
+  onTogglePaid: (id: string, paid: boolean) => void
 }
 
-export function BudgetCard({ entry, onUpdate }: Props) {
-  const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState({
-    money: entry.money,
-    paid: entry.paid,
-  })
-
-  const handleSave = () => {
-    onUpdate(entry.id, {
-        id: entry.id,
-        ...form
-    })
-    setEditing(false)
-  }
-
+export function BudgetCard({ entry, onTogglePaid }: Props) {
   return (
-    <div className="bg-white p-4 border rounded shadow">
-      <div className="flex justify-between items-center mb-2">
-        <div className="font-semibold">{entry.thingsToSpend}</div>
-        <div className="text-sm text-gray-500">{entry.category}</div>
+    <div className="flex justify-between items-center border border-green-200 bg-white rounded-xl p-4 shadow-sm">
+      <div>
+        <div className="text-lg font-semibold text-green-800">
+          {entry.thingsToSpend} - ₹{entry.money}
+        </div>
+        <div className="text-sm text-green-600">{entry.category}</div>
+        <div className="text-xs text-gray-500">
+          Paid By: {new Date(entry.paidBy).toLocaleString()}
+        </div>
       </div>
-      <div className="text-gray-700 mb-2">Amount: ₹{form.money}</div>
-      <div className="text-gray-500 text-sm">Paid By: {new Date(entry.paidBy).toLocaleString()}</div>
-      <div className="flex items-center space-x-4 mt-2">
-        {editing ? (
-          <>
-            <input
-              type="text"
-              value={form.money}
-              onChange={e => setForm({ ...form, money: e.target.value })}
-              className="border p-1 rounded"
-            />
-            <label>
-              <input
-                type="checkbox"
-                checked={form.paid}
-                onChange={e => setForm({ ...form, paid: e.target.checked })}
-              />{" "}
-              Paid
-            </label>
-            <button className="text-green-600" onClick={handleSave}>
-              Save
-            </button>
-          </>
-        ) : (
-          <>
-            <span className={`text-sm ${entry.paid ? "text-green-600" : "text-red-600"}`}>
-              {entry.paid ? "Paid" : "Unpaid"}
-            </span>
-            <button className="text-blue-600" onClick={() => setEditing(true)}>
-              Edit
-            </button>
-          </>
-        )}
-      </div>
+      <button
+        onClick={() => onTogglePaid(entry.id, !entry.paid)}
+        className="text-green-600 hover:text-green-800"
+        title={entry.paid ? "Mark as unpaid" : "Mark as paid"}
+      >
+        {entry.paid ? <CheckCircle size={24} /> : <Circle size={24} />}
+      </button>
     </div>
   )
 }

@@ -2,9 +2,8 @@ import { useEffect, useState } from "react"
 import {
   BudgetTrackerCreateType,
   BudgetTrackerUpdateType,
-  BudgetTrackerType,
+  BudgetTrackerType
 } from "daddys-personal-manager"
-import { BudgetCard } from "./BudgetCard"
 
 export function BudgetTracker() {
   const [entries, setEntries] = useState<BudgetTrackerType[]>([])
@@ -13,47 +12,60 @@ export function BudgetTracker() {
     money: "",
     category: "",
     paidBy: new Date().toISOString(),
-    paid: false,
+    paid: false
   })
 
   const api = "https://backend.bagririshav01.workers.dev/api/v1/budget"
   const headers = {
-    "content-type": "application/json",
-    authorization: "Bearer <your-token-here>",
+    "Content-Type": "application/json",
+    Authorization:
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUxZjJmZTE5LTQ0ZDYtNGMyOS1hZjc3LTA2NGE3MjU5YmNjNiIsInVzZXJOYW1lIjoiam9obmUxMjMifQ.1TOn_Vs5RcRKcoxiP8JKRyAbvT3ofaCtyLYkYqBnhe0"
+  }
+
+  const fetchEntries = async () => {
+    const res = await fetch(`${api}/budget`, { headers })
+    if (res.ok) {
+      const data: BudgetTrackerType[] = await res.json()
+      setEntries(data.sort((a, b) => +new Date(b.paidBy) - +new Date(a.paidBy)))
+    } else {
+      console.error("Failed to fetch budget entries")
+    }
   }
 
   useEffect(() => {
-    fetch(`${api}`, { headers })
-      .then(res => res.json())
-      .then(setEntries)
-      .catch(console.error)
+    fetchEntries()
   }, [])
 
   const handleCreate = async () => {
-    const res = await fetch(`${api}`, {
+    const res = await fetch(`${api}/budget`, {
       method: "POST",
       headers,
-      body: JSON.stringify(form),
+      body: JSON.stringify(form)
     })
 
     if (res.ok) {
       const { created } = await res.json()
-      setEntries(prev => [...prev, created])
+      setEntries(prev =>
+        [created, ...prev].sort((a, b) => +new Date(b.paidBy) - +new Date(a.paidBy))
+      )
       setForm({
         thingsToSpend: "",
         money: "",
         category: "",
         paidBy: new Date().toISOString(),
-        paid: false,
+        paid: false
       })
+    } else {
+      console.error("Failed to create entry")
     }
   }
 
-  const handleUpdate = async (id: string, update: BudgetTrackerUpdateType) => {
+  const handleTogglePaid = async (id: string, paid: boolean) => {
+    const updateData: BudgetTrackerUpdateType = { id, paid }
     const res = await fetch(`${api}/update`, {
       method: "PUT",
       headers,
-      body: JSON.stringify({ ...update, id }),
+      body: JSON.stringify(updateData)
     })
 
     if (res.ok) {
@@ -61,13 +73,38 @@ export function BudgetTracker() {
       setEntries(prev =>
         prev.map(entry => (entry.id === id ? { ...entry, ...updated } : entry))
       )
+    } else {
+      console.error("Failed to update entry")
     }
   }
 
+  const totalSpent = entries
+    .filter(e => e.paid)
+    .reduce((sum, e) => sum + (parseFloat(e.money) || 0), 0)
+
+  const totalUnpaid = entries
+    .filter(e => !e.paid)
+    .reduce((sum, e) => sum + (parseFloat(e.money) || 0), 0)
+
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">Budget Tracker</h1>
+      <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">
+        Budget Tracker
+      </h1>
 
+      {/* Summary */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="bg-green-100 text-green-800 p-4 rounded-xl shadow text-center">
+          <p className="text-sm font-medium">Total Spent</p>
+          <p className="text-xl font-bold">₹{totalSpent.toFixed(2)}</p>
+        </div>
+        <div className="bg-yellow-100 text-yellow-800 p-4 rounded-xl shadow text-center">
+          <p className="text-sm font-medium">Unpaid Budget</p>
+          <p className="text-xl font-bold">₹{totalUnpaid.toFixed(2)}</p>
+        </div>
+      </div>
+
+      {/* Form */}
       <div className="bg-green-50 p-6 rounded-2xl shadow-lg mb-8 space-y-4 border border-green-200">
         <input
           className="w-full border border-green-300 p-2 rounded"
@@ -78,35 +115,59 @@ export function BudgetTracker() {
         <input
           className="w-full border border-green-300 p-2 rounded"
           placeholder="Amount"
+          type="number"
           value={form.money}
           onChange={e => setForm({ ...form, money: e.target.value })}
         />
         <input
           className="w-full border border-green-300 p-2 rounded"
-          placeholder="Category (optional)"
-          value={form.category || ""}
+          placeholder="Category"
+          value={form.category}
           onChange={e => setForm({ ...form, category: e.target.value })}
         />
-        <label className="block text-sm">
-          Paid:
-          <input
-            type="checkbox"
-            className="ml-2"
-            checked={form.paid}
-            onChange={e => setForm({ ...form, paid: e.target.checked })}
-          />
-        </label>
+        <input
+          className="w-full border border-green-300 p-2 rounded"
+          type="datetime-local"
+          value={form.paidBy.slice(0, 16)}
+          onChange={e =>
+            setForm({ ...form, paidBy: new Date(e.target.value).toISOString() })
+          }
+        />
         <button
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           onClick={handleCreate}
         >
           Add Entry
         </button>
       </div>
 
+      {/* List */}
       <div className="space-y-4">
         {entries.map(entry => (
-          <BudgetCard key={entry.id} entry={entry} onUpdate={handleUpdate} />
+          <div
+            key={entry.id}
+            className={`p-4 border rounded-lg shadow flex justify-between items-center ${
+              entry.paid ? "bg-green-50" : "bg-yellow-50"
+            }`}
+          >
+            <div>
+              <p className="font-semibold text-lg">{entry.thingsToSpend}</p>
+              <p className="text-sm text-gray-600">
+                ₹{entry.money} • {entry.category} •{" "}
+                {new Date(entry.paidBy).toLocaleString()}
+              </p>
+            </div>
+            <button
+              onClick={() => handleTogglePaid(entry.id, !entry.paid)}
+              className={`px-3 py-1 rounded text-sm font-medium ${
+                entry.paid
+                  ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  : "bg-green-600 text-white hover:bg-green-700"
+              }`}
+            >
+              {entry.paid ? "✓ Paid" : "Mark Paid"}
+            </button>
+          </div>
         ))}
       </div>
     </div>

@@ -20,35 +20,38 @@ export function ReminderManager() {
       "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUxZjJmZTE5LTQ0ZDYtNGMyOS1hZjc3LTA2NGE3MjU5YmNjNiIsInVzZXJOYW1lIjoiam9obmUxMjMifQ.1TOn_Vs5RcRKcoxiP8JKRyAbvT3ofaCtyLYkYqBnhe0"
   }
 
-  useEffect(() => {
-    fetch(api, { headers })
-        .then(res => res.json())
-        .then(data => {
-        console.log("Fetched reminders:", data)
-        if(data.length!==entries.length){
-            setEntries(data)
-        }
-        })
-        .catch(console.error)
-    }, [entries])
+ useEffect(() => {
+  fetch(api, { headers })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Fetched reminders:", data)
+      setEntries(data)
+    })
+    .catch(console.error)
+}, []) // ✅ Run only on mount
+
 
 
   const handleCreate = async () => {
-    const res = await fetch(api, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        ...form,
-        time: new Date(form.time).toISOString(), // Convert to ISO string
-      }),
-    })
+  const res = await fetch(api, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      ...form,
+      time: new Date(form.time).toISOString(),
+    }),
+  })
 
-    if (res.ok) {
-      const created: ReminderType = await res.json()
-      setEntries(prev => [...prev, created])
-      setForm({ title: "", time: "" })
-    }
+  if (res.ok) {
+    setForm({ title: "", time: "" })
+
+    // 🔁 Re-fetch list to get full data (including id + proper time format)
+    const refreshed = await fetch(api, { headers })
+    const updatedEntries = await refreshed.json()
+    setEntries(updatedEntries)
   }
+}
+
 
   const handleDelete = async (id: string) => {
     const input: ReminderDeleteInput = { id }
@@ -90,8 +93,9 @@ export function ReminderManager() {
 
       <div className="space-y-4">
         {entries.map(entry => (
-          <ReminderCard key={entry.id} entry={entry} onDelete={handleDelete} />
+            <ReminderCard key={entry.id} entry={entry} onDelete={handleDelete} />
         ))}
+
       </div>
     </div>
   )
