@@ -8,7 +8,7 @@
   "dependencies": {
     "@prisma/client": "^6.7.0",
     "@prisma/extension-accelerate": "^1.3.0",
-    "daddys-personal-manager": "^1.0.4",
+    "daddys-personal-manager": "^1.0.6",
     "hono": "^4.7.7",
     "jsonwebtoken": "^9.0.2"
   },

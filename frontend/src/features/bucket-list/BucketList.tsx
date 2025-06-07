@@ -71,7 +71,7 @@ export function BucketList() {
           type="text"
           value={ownerName}
           onChange={(e: ChangeEvent<HTMLInputElement>) => setOwnerName(e.target.value)}
-          placeholder="Your Name"
+          placeholder="New bucket List title"
           className="w-full border p-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
 
@@ -80,7 +80,7 @@ export function BucketList() {
             type="text"
             value={newItem}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setNewItem(e.target.value)}
-            placeholder="Add bucket list item"
+            placeholder="Add a plan"
             className="flex-1 border p-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
           <button

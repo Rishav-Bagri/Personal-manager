@@ -5,7 +5,7 @@ import {Features} from "./pages/Features"
 import { BucketList } from "./features/bucket-list/BucketList"
 import { PasswordManager } from "./features/password-manager/PasswordManager"
 import { Tasks } from "./features/tasks/Tasks"
-import { Reminders } from "./features/reminders/Reminders"
+import { ReminderManager } from "./features/reminders/Reminders"
 import { useState } from "react"
 import { BudgetTracker } from "./features/budget-tracker/budgetTracker"
 import { Notepad } from "./features/notepad/notepad"
@@ -26,7 +26,7 @@ function App() {
                 <Route path="/budget-tracker" element={<BudgetTracker />} />
                 <Route path="/notepad" element={<Notepad />} />
                 <Route path="/password-manager" element={<PasswordManager />} />
-                <Route path="/reminders" element={<Reminders />} />
+                <Route path="/reminders" element={<ReminderManager />} />
                 <Route path="/tasks" element={<Tasks />} />
 
             </Routes>

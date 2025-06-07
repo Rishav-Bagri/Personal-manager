@@ -7,6 +7,7 @@ import budgetRouter from './features/budgetTracker'
 import taskRouter from './features/task'
 import { verify } from 'hono/jwt'
 import { ENV } from './features/envtype'
+import notepadRouter from './features/notepad'
 
 const mainRouter = new Hono<ENV>()
 
@@ -43,4 +44,5 @@ mainRouter.route("/reminder", reminderRouter)
 mainRouter.route("/bucket-list", bucketListRouter)
 mainRouter.route("/budget", budgetRouter)
 mainRouter.route("/task", taskRouter)
+mainRouter.route("/notepad", notepadRouter)
 export default mainRouter

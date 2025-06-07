@@ -18,3 +18,8 @@ export declare const ReminderDeleteSchema: z.ZodObject<{
 }>;
 export type ReminderCreateInput = z.infer<typeof ReminderCreateSchema>;
 export type ReminderDeleteInput = z.infer<typeof ReminderDeleteSchema>;
+export type ReminderType = {
+    id: string;
+    title: string;
+    time: string;
+};

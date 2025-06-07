@@ -79,6 +79,7 @@ export function Tasks() {
 
   // Update task
   const handleUpdate = async (id: string, updates: Partial<TaskType>) => {
+    //@ts-ignore
     const input: TaskUpdateType = { id, ...updates }
     const res = await fetch(`${api}/update`, {
       method: "PUT",
@@ -116,13 +117,20 @@ export function Tasks() {
           value={form.description}
           onChange={e => setForm({ ...form, description: e.target.value })}
         />
-        <div className="flex gap-2">
-          <input
-            type="date"
-            className="border border-blue-300 p-2 rounded"
-            value={form.dueDate ? (typeof form.dueDate === "string" ? form.dueDate : (form.dueDate as Date).toISOString().slice(0, 10)) : ""}
-            onChange={e => setForm({ ...form, dueDate: e.target.value ? new Date(e.target.value) : undefined })}
-          />
+        <div className="flex gap-2 items-center">
+          <div className="flex items-center">
+            <div className="mr-2 text-lg">
+              Due:
+            </div>
+            <div>
+              <input
+                type="date"
+                className="border border-blue-300 p-2 rounded"
+                value={form.dueDate ? (typeof form.dueDate === "string" ? form.dueDate : (form.dueDate as Date).toISOString().slice(0, 10)) : ""}
+                onChange={e => setForm({ ...form, dueDate: e.target.value ? new Date(e.target.value) : undefined })}
+              />  
+            </div>
+          </div>
           <select
             className="border border-blue-300 p-2 rounded"
             value={form.priority}

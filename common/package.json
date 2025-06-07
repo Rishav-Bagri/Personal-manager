@@ -1,6 +1,6 @@
 {
   "name": "daddys-personal-manager",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Zod validation schemas for Daddy's Personal Manager app",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,15 +10,25 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build"
   },
-  "keywords": ["zod", "validation", "schemas", "typescript"],
+  "keywords": [
+    "zod",
+    "validation",
+    "schemas",
+    "typescript"
+  ],
   "author": "your-name-or-handle",
   "license": "MIT",
   "dependencies": {
     "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
   }
 }
