@@ -21,3 +21,11 @@ export const budgetTrackerUpdateSchema = z.object({
 // Types
 export type BudgetTrackerCreateType = z.infer<typeof budgetTrackerCreateSchema>
 export type BudgetTrackerUpdateType = z.infer<typeof budgetTrackerUpdateSchema>
+export type BudgetTrackerType = {
+  id: string
+  thingsToSpend: string
+  money: string
+  category?: string
+  paidBy: string
+  paid: boolean
+}

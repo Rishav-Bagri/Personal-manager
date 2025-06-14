@@ -44,6 +44,32 @@ export declare const TaskDeleteSchema: z.ZodObject<{
 }, {
     id: string;
 }>;
+export declare const TaskBulkSchema: z.ZodObject<{
+    id: z.ZodString;
+    userName: z.ZodString;
+    title: z.ZodString;
+    description: z.ZodString;
+    done: z.ZodBoolean;
+    dueDate: z.ZodNullable<z.ZodString>;
+    priority: z.ZodNullable<z.ZodEnum<["HIGH", "MEDIUM", "LOW"]>>;
+}, "strip", z.ZodTypeAny, {
+    title: string;
+    id: string;
+    userName: string;
+    description: string;
+    dueDate: string | null;
+    priority: "HIGH" | "MEDIUM" | "LOW" | null;
+    done: boolean;
+}, {
+    title: string;
+    id: string;
+    userName: string;
+    description: string;
+    dueDate: string | null;
+    priority: "HIGH" | "MEDIUM" | "LOW" | null;
+    done: boolean;
+}>;
 export type TaskCreateType = z.infer<typeof TaskCreateSchema>;
 export type TaskUpdateType = z.infer<typeof TaskUpdateSchema>;
 export type TaskDeleteType = z.infer<typeof TaskDeleteSchema>;
+export type TaskType = z.infer<typeof TaskBulkSchema>;

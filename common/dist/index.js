@@ -16,7 +16,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./bucketlist/bucketList"), exports);
 __exportStar(require("./budgetTracker/budgetTracker"), exports);
-// export * from "./notepad/notepad"
+__exportStar(require("./notepad/notepad"), exports);
 __exportStar(require("./passwordManager/passwordManager"), exports);
 __exportStar(require("./reminders/reminder"), exports);
 __exportStar(require("./task/task"), exports);

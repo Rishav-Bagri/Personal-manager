@@ -39,6 +39,23 @@ export declare const passwordManagerDeleteSchema: z.ZodObject<{
 }, {
     id: string;
 }>;
+export declare const passwordManagerBulkSchema: z.ZodObject<{
+    id: z.ZodString;
+    userName: z.ZodString;
+    domain: z.ZodString;
+    notes: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    id: string;
+    userName: string;
+    domain: string;
+    notes?: string | undefined;
+}, {
+    id: string;
+    userName: string;
+    domain: string;
+    notes?: string | undefined;
+}>;
+export type PasswordManagerType = z.infer<typeof passwordManagerBulkSchema>;
 export type PasswordManagerCreateInput = z.infer<typeof passwordManagerCreateSchema>;
 export type PasswordManagerGetPasswordByIdInput = z.infer<typeof passwordManagerGetPasswordByIdSchema>;
 export type PasswordManagerUpdateInput = z.infer<typeof passwordManagerUpdateSchema>;

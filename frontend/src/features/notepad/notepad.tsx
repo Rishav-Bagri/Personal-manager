@@ -1,98 +1,105 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from "react"
+import {
+  NotepadCreateInput,
+  NotepadDeleteInput,
+  NotepadUpdateInput,
+  NotepadType
+} from "daddys-personal-manager"
+import { NoteCard } from "./NoteCard"
 
-interface Note {
-  id: number;
-  title: string;
-  content: string;
-  completed: boolean;
-}
+export function Notepad() {
+  const [entries, setEntries] = useState<NotepadType[]>([])
+  const [form, setForm] = useState<NotepadCreateInput>({ title: "", content: "" })
 
-export default function NotepadVCX() {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [history, setHistory] = useState<Note[]>([]);
+  const notepadApi = "https://backend.bagririshav01.workers.dev/api/v1/notepad/notepad"
+  const notepadHeaders = {
+    "Content-Type": "application/json",
+    Authorization:
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUxZjJmZTE5LTQ0ZDYtNGMyOS1hZjc3LTA2NGE3MjU5YmNjNiIsInVzZXJOYW1lIjoiam9obmUxMjMifQ.1TOn_Vs5RcRKcoxiP8JKRyAbvT3ofaCtyLYkYqBnhe0"
+  }
 
-  const handleAddNote = () => {
-    if (title.trim() && content.trim()) {
-      const newNote: Note = {
-        id: Date.now(),
-        title: title.trim(),
-        content: content.trim(),
-        completed: false,
-      };
-      setNotes([...notes, newNote]);
-      setTitle('');
-      setContent('');
+  useEffect(() => {
+    fetch(notepadApi, { headers: notepadHeaders })
+      .then(res => res.json())
+      .then(setEntries)
+      .catch(console.error)
+  }, [])
+
+  const handleCreate = async () => {
+    const res = await fetch(notepadApi, {
+      method: "POST",
+      headers: notepadHeaders,
+      body: JSON.stringify(form)
+    })
+
+    if (res.ok) {
+      const { created } = await res.json()
+      setEntries(prev => [...prev, created])
+      setForm({ title: "", content: "" })
     }
-  };
+  }
 
-  const handleComplete = (id: number) => {
-    const updatedNotes = notes.map((note) =>
-      note.id === id ? { ...note, completed: true } : note
-    );
-    const completedNote = updatedNotes.find(note => note.id === id);
-    if (completedNote) {
-      setHistory([...history, completedNote]);
+  const handleDelete = async (id: string) => {
+    const input: NotepadDeleteInput = { id }
+    const res = await fetch(notepadApi, {
+      method: "DELETE",
+      headers: notepadHeaders,
+      body: JSON.stringify(input)
+    })
+
+    if (res.ok) {
+      setEntries(prev => prev.filter(e => e.id !== id))
     }
-    setNotes(updatedNotes.filter((note) => note.id !== id));
-  };
+  }
+
+  const handleUpdate = async (id: string, update: NotepadUpdateInput) => {
+    const res = await fetch(notepadApi, {
+      method: "PUT",
+      headers: notepadHeaders,
+      body: JSON.stringify({ ...update, id })
+    })
+
+    if (res.ok) {
+      const { updated } = await res.json()
+      setEntries(prev => prev.map(e => (e.id === id ? { ...e, ...updated } : e)))
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-200 via-pink-100 to-yellow-100 flex flex-col items-center justify-center p-6">
-      <h1 className="text-4xl font-bold mb-6 text-purple-800">Notepad.vcx</h1>
-      <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-xl space-y-4">
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">Notepad</h1>
+
+      <div className="bg-blue-50 p-6 rounded-2xl shadow-lg mb-8 space-y-4 border border-blue-200">
         <input
-          type="text"
-          placeholder="Enter note title..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="w-full p-2 border border-blue-300 rounded"
+          placeholder="Title"
+          value={form.title}
+          onChange={e => setForm({ ...form, title: e.target.value })}
         />
         <textarea
-          placeholder="Enter your note..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400"
-          rows={4}
-        ></textarea>
+          className="w-full p-2 border border-blue-300 rounded"
+          placeholder="Content"
+          value={form.content}
+          onChange={e => setForm({ ...form, content: e.target.value })}
+        />
         <button
-          onClick={handleAddNote}
-          className="bg-purple-600 text-white px-4 py-2 rounded-xl w-full hover:bg-purple-700 transition"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          onClick={handleCreate}
         >
           Add Note
         </button>
       </div>
 
-      {notes.length > 0 && (
-        <div className="mt-10 w-full max-w-xl">
-          <h2 className="text-2xl font-semibold text-pink-600 mb-4">Current Notes</h2>
-          {notes.map((note) => (
-            <div key={note.id} className="bg-white p-4 mb-3 rounded-xl shadow-md">
-              <h3 className="font-bold text-lg text-purple-700">{note.title}</h3>
-              <p className="text-gray-700 mt-1">{note.content}</p>
-              <button
-                onClick={() => handleComplete(note.id)}
-                className="mt-2 text-sm text-green-600 hover:underline"
-              >
-                Mark as Done
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {history.length > 0 && (
-        <div className="mt-10 w-full max-w-xl">
-          <h2 className="text-2xl font-semibold text-green-700 mb-4">Completed Notes</h2>
-          {history.map((note) => (
-            <div key={note.id} className="bg-green-100 p-4 mb-3 rounded-xl shadow-inner">
-              <h3 className="font-bold text-lg text-green-900">{note.title}</h3>
-              <p className="text-green-800 mt-1">{note.content}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="space-y-4">
+        {entries.map(entry => (
+          <NoteCard
+            key={entry.id}
+            entry={entry}
+            onDelete={handleDelete}
+            onUpdate={handleUpdate}
+          />
+        ))}
+      </div>
     </div>
-  );
+  )
 }

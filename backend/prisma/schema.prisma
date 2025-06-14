@@ -26,6 +26,7 @@ model User {
   budgetTracker   BudgetTracker[]
   reminders       Reminder[]
   tasks           Task[]
+  notePad         Notepad[]
 }
 
 model PasswordManager {
@@ -82,4 +83,15 @@ model Task {
   done        Boolean   @default(false)
   dueDate     DateTime?
   priority    Priority?
+}
+
+
+model Notepad {
+  id        String   @id @default(uuid())
+  userName  String
+  user      User     @relation(fields: [userName], references: [userName])
+  title     String
+  content   String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
