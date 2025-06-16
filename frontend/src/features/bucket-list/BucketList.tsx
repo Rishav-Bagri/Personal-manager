@@ -1,157 +1,210 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useEffect, useState } from "react";
+import {
+  BucketListType,
+  BucketListCreateType,
+  BucketListUpdateType,
+  BucketListDeleteType,
+} from "daddys-personal-manager";
 
-interface BucketItem {
-  text: string;
-  done: boolean;
-}
-
-interface BucketListType {
-  owner: string;
-  items: BucketItem[];
-}
+const BASE_URL = "https://backend.bagririshav01.workers.dev";
+const AUTH_TOKEN =
+  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUxZjJmZTE5LTQ0ZDYtNGMyOS1hZjc3LTA2NGE3MjU5YmNjNiIsInVzZXJOYW1lIjoiam9obmUxMjMifQ.1TOn_Vs5RcRKcoxiP8JKRyAbvT3ofaCtyLYkYqBnhe0";
 
 export function BucketList() {
-  const [bucketLists, setBucketLists] = useState<BucketListType[]>([]);
-  const [ownerName, setOwnerName] = useState<string>('');
-  const [currentItems, setCurrentItems] = useState<BucketItem[]>([]);
-  const [newItem, setNewItem] = useState<string>('');
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editedText, setEditedText] = useState<string>('');
+  const [entries, setEntries] = useState<BucketListType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState<BucketListCreateType>({
+    title: "",
+    plan: "",
+    doneBy: undefined,
+  });
+  const [error, setError] = useState<string | null>(null);
 
-  const addItem = () => {
-    if (newItem.trim() !== '') {
-      setCurrentItems([...currentItems, { text: newItem.trim(), done: false }]);
-      setNewItem('');
+  async function fetchEntries() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/bucket-list/bulk`, {
+        headers: { Authorization: AUTH_TOKEN },
+      });
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setEntries(data);
+    } catch (err) {
+      setError("Failed to load bucket list");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
-  const startEdit = (index: number) => {
-    setEditingIndex(index);
-    setEditedText(currentItems[index].text);
-  };
+  useEffect(() => {
+    fetchEntries();
+  }, []);
 
-  const saveEdit = () => {
-    if (editingIndex === null || editedText.trim() === '') return;
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  }
 
-    const updatedItems = [...currentItems];
-    updatedItems[editingIndex].text = editedText.trim();
-    setCurrentItems(updatedItems);
-    setEditingIndex(null);
-    setEditedText('');
-  };
+  async function handleAdd(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.title || !form.plan) {
+      setError("Title and plan are required");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const payload = {
+        ...form,
+        doneBy: form.doneBy ? new Date(form.doneBy).toISOString() : undefined,
+      };
 
-  const markDone = (index: number) => {
-    const updatedItems = [...currentItems];
-    updatedItems[index].done = true;
-    setCurrentItems(updatedItems);
-  };
+      const res = await fetch(`${BASE_URL}/api/v1/bucket-list/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: AUTH_TOKEN,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setForm({ title: "", plan: "", doneBy: undefined });
+      fetchEntries();
+    } catch (err) {
+      setError("Failed to add bucket list item");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  const createBucketList = () => {
-    if (ownerName.trim() === '' || currentItems.length === 0) return;
+  async function toggleDone(id: string, current: boolean) {
+    setLoading(true);
+    setError(null);
+    try {
+      const payload: BucketListUpdateType = { id, isDone: !current };
+      const res = await fetch(`${BASE_URL}/api/v1/bucket-list/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: AUTH_TOKEN,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      fetchEntries();
+    } catch {
+      setError("Failed to update status");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-    setBucketLists([
-      ...bucketLists,
-      {
-        owner: ownerName.trim(),
-        items: currentItems,
-      },
-    ]);
-
-    setOwnerName('');
-    setCurrentItems([]);
-    setNewItem('');
-  };
+  async function handleDelete(id: string) {
+    setLoading(true);
+    setError(null);
+    try {
+      const payload: BucketListDeleteType = { id };
+      const res = await fetch(`${BASE_URL}/api/v1/bucket-list/delete`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: AUTH_TOKEN,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      fetchEntries();
+    } catch {
+      setError("Failed to delete item");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-blue-100 to-pink-100 py-10 px-4 text-center">
-      <h1 className="text-4xl font-bold text-indigo-700 mb-8 transition-all">🌟 Multi Bucket List App 🌟</h1>
+    <div className="min-h-screen bg-[#f9f5f0] p-4 max-w-2xl mx-auto font-sans">
+      <h1 className="text-3xl text-center font-bold mb-6 text-[#3b3b3b]">
+        My Bucket List
+      </h1>
 
-      <div className="max-w-xl mx-auto bg-white shadow-2xl rounded-2xl p-6 space-y-6 transition-all">
+      <form
+        onSubmit={handleAdd}
+        className="space-y-4 border border-[#e5d4c0] bg-white p-4 rounded-xl shadow-md"
+      >
         <input
           type="text"
-          value={ownerName}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setOwnerName(e.target.value)}
-          placeholder="New bucket List title"
-          className="w-full border p-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          name="title"
+          placeholder="Title"
+          value={form.title}
+          onChange={handleChange}
+          className="w-full p-3 border border-[#e8d7c6] rounded-md focus:outline-none focus:ring-2 focus:ring-pink-300"
         />
+        <textarea
+          name="plan"
+          placeholder="Write your plan"
+          value={form.plan}
+          onChange={handleChange}
+          className="w-full p-3 border border-[#e8d7c6] rounded-md focus:outline-none focus:ring-2 focus:ring-pink-300"
+        />
+        <input
+          type="datetime-local"
+          name="doneBy"
+          value={form.doneBy || ""}
+          onChange={handleChange}
+          className="w-full p-3 border border-[#e8d7c6] rounded-md text-gray-700"
+        />
+        <button
+          type="submit"
+          className="bg-[#ffb7c5] hover:bg-[#fca7b5] text-white font-semibold py-2 px-4 rounded-md w-full"
+        >
+          Add to List
+        </button>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+      </form>
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newItem}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setNewItem(e.target.value)}
-            placeholder="Add a plan"
-            className="flex-1 border p-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400"
-          />
-          <button
-            onClick={addItem}
-            className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl transition-all"
-          >
-            Add
-          </button>
-        </div>
-
-        <ul className="text-left space-y-2">
-          {currentItems.map((item, index) => (
-            <li key={index} className="flex justify-between items-center bg-gray-100 px-4 py-2 rounded-xl">
-              {editingIndex === index ? (
-                <>
-                  <input
-                    type="text"
-                    value={editedText}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setEditedText(e.target.value)}
-                    className="flex-1 border p-1 rounded-lg"
-                  />
-                  <button onClick={saveEdit} className="ml-2 text-blue-500">Save</button>
-                </>
-              ) : (
-                <>
-                  <span className={`${item.done ? 'line-through text-gray-500' : ''}`}>{item.text}</span>
-                  {!item.done && (
-                    <div className="flex gap-2">
-                      <button onClick={() => startEdit(index)} className="text-yellow-500">Edit</button>
-                      <button onClick={() => markDone(index)} className="text-green-600">Done</button>
-                    </div>
-                  )}
-                </>
-              )}
+      {loading ? (
+        <p className="text-center mt-6 text-[#555]">Loading...</p>
+      ) : (
+        <ul className="mt-6 space-y-4">
+          {entries.map((entry) => (
+            <li
+              key={entry.id}
+              className="p-4 bg-white border border-[#e5d4c0] rounded-xl shadow-sm"
+            >
+              <div className="mb-2">
+                <h3 className="text-lg font-semibold text-[#444]">{entry.title}</h3>
+                <p className="text-sm text-[#777] mb-1">{entry.plan}</p>
+                {entry.doneBy && (
+                  <p className="text-xs text-[#999]">
+                    Done By: {new Date(entry.doneBy).toLocaleString()}
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => toggleDone(entry.id, entry.isDone)}
+                  className={`px-3 py-1 text-sm rounded-md ${
+                    entry.isDone
+                      ? "bg-green-400 hover:bg-green-500 text-white"
+                      : "bg-yellow-400 hover:bg-yellow-500 text-white"
+                  }`}
+                >
+                  {entry.isDone ? "Mark Undone" : "Mark Done"}
+                </button>
+                <button
+                  onClick={() => handleDelete(entry.id)}
+                  className="px-3 py-1 text-sm bg-red-400 hover:bg-red-500 text-white rounded-md"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
-
-        <button
-          onClick={createBucketList}
-          disabled={!ownerName || currentItems.length === 0}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl disabled:opacity-50"
-        >
-          Create Bucket List
-        </button>
-      </div>
-
-      {/* Display Created Bucket Lists */}
-      <div className="mt-12">
-        <h2 className="text-3xl font-semibold text-indigo-800 mb-6">All Bucket Lists 🗂️</h2>
-        <div className="space-y-6">
-          {bucketLists.map((list, idx) => (
-            <div
-              key={idx}
-              className="max-w-xl mx-auto bg-white border border-gray-200 shadow-xl rounded-2xl p-6"
-            >
-              <h3 className="text-xl font-bold text-purple-600">{list.owner}'s Bucket List</h3>
-              <ul className="mt-2 text-left space-y-1">
-                {list.items.map((item, i) => (
-                  <li
-                    key={i}
-                    className={`pl-2 ${item.done ? 'text-green-600 line-through' : 'text-black'}`}
-                  >
-                    {item.text}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
